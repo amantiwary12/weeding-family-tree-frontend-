@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const BACKEND = 'https://wedding-family-tree-backend.onrender.com'; // Your backend URL
+const BACKEND = 'https://wedding-family-tree-backend.onrender.com';
 
 const relationOptions = [
   { code: 'self', label: "Self (Groom/Bride)" },
@@ -84,7 +84,6 @@ export default function ScanForm() {
       formData.append('side', side);
       formData.append('gender', gender);
 
-      // Parent IDs
       let parentIds = [];
       try {
         parentIds = parentIDsRaw.trim() ? JSON.parse(parentIDsRaw) : [];
@@ -93,14 +92,10 @@ export default function ScanForm() {
       }
       formData.append('parent_ids', JSON.stringify(parentIds));
 
-      // Photo
-      if (photo) {
-        formData.append('photo', photo);
-      }
+      if (photo) formData.append('photo', photo);
 
       const res = await axios.post(`${BACKEND}/api/people`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 30000
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       setStatus('Submitted successfully!');
@@ -109,17 +104,10 @@ export default function ScanForm() {
       setPhotoPreview(null);
       setParentIDsRaw('[]');
 
-      setTimeout(() => window.location.href = '/tree', 2000);
-
+      setTimeout(() => window.location.href = '/tree', 1500);
     } catch (err) {
       console.error(err);
-      if (err.response) {
-        setStatus(`Error: ${err.response.data?.message || 'Server error'}`);
-      } else if (err.request) {
-        setStatus('Network error. Check connection.');
-      } else {
-        setStatus('Error while submitting.');
-      }
+      setStatus('Error submitting data.');
     } finally {
       setIsSubmitting(false);
     }
@@ -129,7 +117,7 @@ export default function ScanForm() {
     <div className="min-h-screen bg-rose-50 py-8 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-8 space-y-6">
         <h1 className="text-3xl font-bold text-center text-rose-600">Join Our Family Story</h1>
-        
+
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="block mb-1 font-semibold">Full Name *</label>
@@ -213,11 +201,11 @@ export default function ScanForm() {
             {isSubmitting ? "Submitting..." : "Join Family Tree"}
           </button>
 
-          {status && <p className="mt-2 text-center text-red-600">{status}</p>}
+          {status && <p className="mt-2 text-center text-sm text-gray-600">{status}</p>}
         </form>
 
         <div className="text-center mt-4">
-          <Link to="/tree" className="text-rose-600 underline">View Family Tree</Link>
+          <Link to="/tree" className="text-rose-600 font-semibold hover:underline">View Family Tree</Link>
         </div>
       </div>
     </div>
