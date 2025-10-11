@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import QRCode from "qrcode.react"; // 👈 for QR
 // If you prefer `qrcode.react` is already installed
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+const BACKEND = import.meta.env.VITE_BACKEND_URL || "https://wedding-family-tree-backend.onrender.com";
 const FRONTEND = import.meta.env.VITE_APP_URL || "http://localhost:5173";
 
 function PersonCard({ p, onDelete }) {
