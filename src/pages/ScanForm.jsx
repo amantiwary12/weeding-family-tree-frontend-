@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const BACKEND = 'https://wedding-family-tree-backend.onrender.com';
+const BACKEND = import.meta.env.VITE_BACKEND_URL;
+
 
 const relationOptions = [
   { code: 'self', label: "Self (Groom/Bride)" },
