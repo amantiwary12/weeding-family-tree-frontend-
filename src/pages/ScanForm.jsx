@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'https://wedding-family-tree-backend.onrender.com';
+const BACKEND = 'https://wedding-family-tree-backend.onrender.com'; // Your backend URL
 
 const relationOptions = [
   { code: 'self', label: "Self (Groom/Bride)" },
@@ -27,7 +27,7 @@ export default function ScanForm() {
   const assumedSide = urlParams.get('side') || 'groom';
 
   const [side, setSide] = useState(assumedSide);
-  const [relation, setRelation] = useState(relationOptions[0].code);
+  const [relation, setRelation] = useState('self');
   const [name, setName] = useState('');
   const [gender, setGender] = useState('unknown');
   const [photo, setPhoto] = useState(null);
@@ -36,76 +36,18 @@ export default function ScanForm() {
   const [status, setStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      setStatus('Please enter your name');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setStatus('Uploading...');
-
-    try {
-      const form = new FormData();
-      form.append('name', name.trim());
-      form.append('relation_code', relation);
-      form.append('relation_label', relationOptions.find(r => r.code === relation)?.label || relation);
-      form.append('side', side);
-      form.append('gender', gender);
-
-      // Handle parent IDs
-      try {
-        const parentIds = parentIDsRaw.trim() === '' ? [] : JSON.parse(parentIDsRaw);
-        if (Array.isArray(parentIds)) form.append('parent_ids', JSON.stringify(parentIds));
-        else form.append('parent_ids', '[]');
-      } catch (err) {
-        form.append('parent_ids', '[]');
-      }
-
-      if (photo) form.append('photo', photo);
-
-      await axios.post(`${BACKEND}/api/people`, form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 30000,
-      });
-
-      setStatus('Submitted successfully! Thank you for joining our family story!');
-      setName('');
-      setPhoto(null);
-      setPhotoPreview(null);
-      setParentIDsRaw('[]');
-
-      setTimeout(() => window.location.href = '/tree', 2000);
-    } catch (err) {
-      console.error('Submission error:', err);
-      if (err.response) setStatus(`Error: ${err.response.data?.message || 'Server error. Please try again.'}`);
-      else if (err.request) setStatus('Network error. Please check your connection and try again.');
-      else setStatus('Error while submitting. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (!file) {
-      setPhoto(null);
-      setPhotoPreview(null);
-      return;
-    }
+    if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      setStatus('File size too large. Max 5MB.');
-      e.target.value = '';
+      setStatus('File size too large (max 5MB)');
       return;
     }
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      setStatus('Please select a valid image file (JPEG, PNG, GIF, WebP).');
-      e.target.value = '';
+      setStatus('Invalid file type');
       return;
     }
 
@@ -124,53 +66,103 @@ export default function ScanForm() {
     if (fileInput) fileInput.value = '';
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setStatus('Please enter your name');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus('Uploading...');
+
+    try {
+      const formData = new FormData();
+      formData.append('name', name.trim());
+      formData.append('relation_code', relation);
+      formData.append('relation_label', relationOptions.find(r => r.code === relation)?.label || relation);
+      formData.append('side', side);
+      formData.append('gender', gender);
+
+      // Parent IDs
+      let parentIds = [];
+      try {
+        parentIds = parentIDsRaw.trim() ? JSON.parse(parentIDsRaw) : [];
+      } catch {
+        parentIds = [];
+      }
+      formData.append('parent_ids', JSON.stringify(parentIds));
+
+      // Photo
+      if (photo) {
+        formData.append('photo', photo);
+      }
+
+      const res = await axios.post(`${BACKEND}/api/people`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 30000
+      });
+
+      setStatus('Submitted successfully!');
+      setName('');
+      setPhoto(null);
+      setPhotoPreview(null);
+      setParentIDsRaw('[]');
+
+      setTimeout(() => window.location.href = '/tree', 2000);
+
+    } catch (err) {
+      console.error(err);
+      if (err.response) {
+        setStatus(`Error: ${err.response.data?.message || 'Server error'}`);
+      } else if (err.request) {
+        setStatus('Network error. Check connection.');
+      } else {
+        setStatus('Error while submitting.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-amber-50 to-rose-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Navigation */}
-        <div className="flex justify-between items-center mb-12">
-          <Link to="/" className="px-6 py-3 bg-white rounded-2xl border border-rose-200 font-medium shadow-lg hover:bg-rose-50 transition-all">Home</Link>
-          <Link to="/tree" className="px-6 py-3 bg-gradient-to-r from-rose-500 to-amber-500 text-white rounded-2xl font-semibold shadow-xl hover:shadow-2xl transition-all">View Family Tree</Link>
-        </div>
-
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">Join Our Family Story</h1>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">Become part of our cherished family tapestry</p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={onSubmit} className="bg-white rounded-3xl shadow-2xl border border-rose-100 p-8 space-y-8">
-          {/* Side */}
+    <div className="min-h-screen bg-rose-50 py-8 px-4">
+      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+        <h1 className="text-3xl font-bold text-center text-rose-600">Join Our Family Story</h1>
+        
+        <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-lg font-semibold mb-4">Family Side *</label>
-            <div className="flex gap-4">
-              {['groom', 'bride', 'other'].map(opt => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => setSide(opt)}
-                  className={`px-6 py-3 rounded-2xl font-medium border-2 ${
-                    side === opt ? 'bg-rose-500 text-white border-transparent' : 'bg-white border-rose-200 text-gray-700'
-                  }`}
-                >
-                  {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                </button>
-              ))}
-            </div>
+            <label className="block mb-1 font-semibold">Full Name *</label>
+            <input
+              required
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="w-full border border-rose-200 rounded-lg p-3"
+              placeholder="Enter your name"
+            />
           </div>
 
-          {/* Relation & Gender */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-lg font-semibold mb-3">Your Relation *</label>
-              <select value={relation} onChange={e => setRelation(e.target.value)} className="w-full p-4 border rounded-2xl">
-                {relationOptions.map(r => <option key={r.code} value={r.code}>{r.label}</option>)}
+              <label className="block mb-1 font-semibold">Relation *</label>
+              <select
+                value={relation}
+                onChange={e => setRelation(e.target.value)}
+                className="w-full border border-rose-200 rounded-lg p-3"
+              >
+                {relationOptions.map(r => (
+                  <option key={r.code} value={r.code}>{r.label}</option>
+                ))}
               </select>
             </div>
+
             <div>
-              <label className="block text-lg font-semibold mb-3">Gender</label>
-              <select value={gender} onChange={e => setGender(e.target.value)} className="w-full p-4 border rounded-2xl">
+              <label className="block mb-1 font-semibold">Gender</label>
+              <select
+                value={gender}
+                onChange={e => setGender(e.target.value)}
+                className="w-full border border-rose-200 rounded-lg p-3"
+              >
                 <option value="female">Female</option>
                 <option value="male">Male</option>
                 <option value="nonbinary">Non-binary</option>
@@ -179,41 +171,54 @@ export default function ScanForm() {
             </div>
           </div>
 
-          {/* Name */}
           <div>
-            <label className="block text-lg font-semibold mb-3">Full Name *</label>
-            <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your name" className="w-full p-4 border rounded-2xl" required />
-          </div>
-
-          {/* Photo */}
-          <div>
-            <label className="block text-lg font-semibold mb-3">Profile Photo (optional)</label>
+            <label className="block mb-1 font-semibold">Profile Photo</label>
             {photoPreview ? (
-              <div className="relative">
-                <img src={photoPreview} alt="Preview" className="w-40 h-40 object-cover rounded-2xl" />
-                <button type="button" onClick={removePhoto} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6">×</button>
+              <div className="relative w-40 h-40">
+                <img src={photoPreview} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                <button
+                  type="button"
+                  onClick={removePhoto}
+                  className="absolute top-1 right-1 bg-red-500 text-white px-2 rounded-full"
+                >
+                  ×
+                </button>
               </div>
             ) : (
-              <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} />
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="w-full"
+              />
             )}
           </div>
 
-          {/* Parent IDs */}
           <div>
-            <label className="block text-lg font-semibold mb-3">Parent Connections (optional)</label>
-            <input type="text" value={parentIDsRaw} onChange={e => setParentIDsRaw(e.target.value)} placeholder='["parent_id_1","parent_id_2"]' className="w-full p-4 border rounded-2xl font-mono" />
+            <label className="block mb-1 font-semibold">Parent IDs (optional)</label>
+            <input
+              value={parentIDsRaw}
+              onChange={e => setParentIDsRaw(e.target.value)}
+              placeholder='["parent_id_1", "parent_id_2"]'
+              className="w-full border border-rose-200 rounded-lg p-3 font-mono text-sm"
+            />
           </div>
 
-          {/* Submit */}
-          <div className="text-center">
-            <button type="submit" disabled={isSubmitting} className="px-12 py-4 bg-rose-500 text-white rounded-2xl font-bold">
-              {isSubmitting ? 'Submitting...' : 'Join Our Family'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-rose-500 text-white p-3 rounded-lg font-semibold"
+          >
+            {isSubmitting ? "Submitting..." : "Join Family Tree"}
+          </button>
 
-          {/* Status */}
-          {status && <div className="mt-4 text-center text-gray-700">{status}</div>}
+          {status && <p className="mt-2 text-center text-red-600">{status}</p>}
         </form>
+
+        <div className="text-center mt-4">
+          <Link to="/tree" className="text-rose-600 underline">View Family Tree</Link>
+        </div>
       </div>
     </div>
   );
