@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import App from './App'
 import ScanForm from './pages/ScanForm'
 import TreeView from './pages/TreeView'
-import './tailwind.css' // Simple import
+import './tailwind.css'
 
 const root = createRoot(document.getElementById('root'))
 
