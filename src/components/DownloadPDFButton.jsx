@@ -23,9 +23,9 @@ export default function DownloadPDFButton({ targetId, fileName }) {
   return (
     <button
       onClick={handleDownload}
-      className="bg-rose-500 hover:bg-rose-600 text-white font-semibold px-4 py-2 rounded shadow"
+      className="bg-rose-500 hover:bg-rose-600 text-white font-semibold px-4 py-2 rounded-md shadow"
     >
-      📄 Download Tree as PDF
+      Download
     </button>
   );
 }
