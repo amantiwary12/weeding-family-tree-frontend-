@@ -699,9 +699,11 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import QRCodeCanvas  from "qrcode.react";
 import { Link } from "react-router-dom";
+import { SCAN_URL, BACKEND_URL } from "../config/env";
 
-const SCAN_URL = ("https://weeding-family-tree.vercel.app" || "http://localhost:5173") + "/scan";
-const BACKEND_URL = "https://wftbackend.onrender.com";
+
+// const SCAN_URL = ("https://weeding-family-tree.vercel.app" || "http://localhost:5173") + "/scan";
+// const BACKEND_URL = ("https://wftbackend.onrender.com" );
 
 export default function TreeView() {
   const { people, loading, error, fetchPeople, handleDelete, groomSide, brideSide } = useFamilyTree();
@@ -750,8 +752,9 @@ export default function TreeView() {
   const EmptyState = ({ icon, message, color }) => (
     <div className="h-full flex items-center justify-center">
       <div className="text-center animate-fade-in">
-        <div className={`text-8xl text-${color}-200 mb-4`}>{icon}</div>
-        <p className={`text-${color}-400 text-lg font-medium`}>{message}</p>
+        <div className="text-8xl text-blue-200 mb-4">{icon}</div>
+<p className="text-blue-400 text-lg font-medium">{message}</p>
+
       </div>
     </div>
   );

@@ -1,12 +1,11 @@
-// 📄 src/config/env.js
 export const config = {
   development: {
     frontendUrl: "http://localhost:5173",
     backendUrl: "http://localhost:8000",
   },
-  production: {
-    frontendUrl: "https://weeding-family-tree.vercel.app",
-    backendUrl: "https://wftbackend.onrender.com",
+  production: { 
+    frontendUrl: "https://wedding-family-tree.vercel.app", // fixed typo
+    backendUrl: "https://wftbackend.onrender.com",  
   }
 };
 
