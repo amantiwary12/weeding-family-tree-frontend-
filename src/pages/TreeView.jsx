@@ -682,6 +682,11 @@
 
 
 
+
+
+
+
+
 // 📄 src/pages/TreeView.jsx
 import React, { useRef, useState } from "react";
 import { useFamilyTree } from "../hooks/useFamilyTree";
@@ -875,3 +880,337 @@ export default function TreeView() {
     </div>
   );
 }
+
+
+
+
+
+
+
+// // new one//////////////////////////////////////////////////////////////
+
+// // 📄 src/pages/TreeView.jsx
+// // 📄 src/pages/TreeView.jsx
+// // 📄 src/pages/TreeView.jsx
+// // 📄 src/pages/TreeView.jsx
+// import React, { useRef, useState, useEffect } from "react";
+// import { useFamilyTree } from "../hooks/useFamilyTree";
+// import { generatePDF } from "../utils/pdfGenerator";
+// import DownloadModal from "../components/DownloadModal";
+// import TreeHeader from "../components/TreeHeader";
+// import SidePanel from "../components/SidePanel";
+// import TreeLayout from "../components/TreeLayout";
+// import Loader from "../components/Loader";
+// import Navbar from "../components/Navbar";
+// import QRCode from "qrcode.react";
+// import { Link } from "react-router-dom";
+// import { FRONTEND_URL, BACKEND_URL, SCAN_URL } from "../config/env";
+
+// export default function TreeView() {
+//   const { people, loading, error, fetchPeople, handleDelete, groomSide, brideSide } = useFamilyTree();
+//   const [showDownloadModal, setShowDownloadModal] = useState(false);
+//   const [downloading, setDownloading] = useState(false);
+//   const [zoomLevel, setZoomLevel] = useState(1);
+  
+//   const familyTreeRef = useRef(null);
+//   const groomSideRef = useRef(null);
+//   const brideSideRef = useRef(null);
+//   const treeContainerRef = useRef(null);
+
+//   // Calculate and set zoom level based on content size
+//   useEffect(() => {
+//     const calculateZoom = () => {
+//       if (!treeContainerRef.current) return;
+
+//       const container = treeContainerRef.current;
+//       const containerWidth = container.clientWidth;
+//       const containerHeight = container.clientHeight - 100; // Account for header
+
+//       // Get the total content width needed (both panels)
+//       const groomContent = groomSideRef.current;
+//       const brideContent = brideSideRef.current;
+      
+//       if (!groomContent || !brideContent) return;
+
+//       const groomWidth = groomContent.scrollWidth;
+//       const brideWidth = brideContent.scrollWidth;
+//       const maxContentWidth = Math.max(groomWidth, brideWidth) * 2; // Both sides
+//       const maxContentHeight = Math.max(groomContent.scrollHeight, brideContent.scrollHeight);
+
+//       // Calculate zoom to fit both width and height
+//       const widthZoom = (containerWidth * 0.9) / maxContentWidth;
+//       const heightZoom = (containerHeight * 0.9) / maxContentHeight;
+//       const newZoom = Math.min(widthZoom, heightZoom, 1); // Don't zoom in beyond 100%
+
+//       setZoomLevel(Math.max(newZoom, 0.3)); // Minimum 30% zoom
+//     };
+
+//     // Calculate initial zoom
+//     calculateZoom();
+
+//     // Recalculate on window resize
+//     window.addEventListener('resize', calculateZoom);
+    
+//     // Recalculate when people data changes
+//     if (people.length > 0) {
+//       setTimeout(calculateZoom, 100); // Small delay to ensure DOM is updated
+//     }
+
+//     return () => window.removeEventListener('resize', calculateZoom);
+//   }, [people.length]);
+
+//   const handleDownload = async (type) => {
+//     setDownloading(true);
+    
+//     let element, fileName, backgroundColor;
+    
+//     switch (type) {
+//       case 'groom':
+//         element = groomSideRef.current;
+//         fileName = 'Groom_Family_Tree.pdf';
+//         backgroundColor = '#f0f9ff';
+//         break;
+//       case 'bride':
+//         element = brideSideRef.current;
+//         fileName = 'Bride_Family_Tree.pdf';
+//         backgroundColor = '#fdf2f8';
+//         break;
+//       case 'complete':
+//         element = familyTreeRef.current;
+//         fileName = 'Complete_Family_Tree.pdf';
+//         backgroundColor = '#f8fafc';
+//         break;
+//       default:
+//         return;
+//     }
+
+//     const success = await generatePDF(element, fileName, backgroundColor);
+//     setDownloading(false);
+    
+//     if (success) {
+//       setShowDownloadModal(false);
+//     } else {
+//       alert('Failed to generate PDF. Please try again.');
+//     }
+//   };
+
+//   const EmptyState = ({ icon, message, color }) => (
+//     <div className="h-full flex items-center justify-center">
+//       <div className="text-center animate-fade-in">
+//         <div className={`text-8xl text-${color}-200 mb-4`}>{icon}</div>
+//         <p className={`text-${color}-400 text-lg font-medium`}>{message}</p>
+//       </div>
+//     </div>
+//   );
+
+//   // Zoom controls component
+//   const ZoomControls = () => (
+//     <div className="fixed bottom-20 left-6 z-50 flex flex-col space-y-2 bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-gray-200">
+//       <button
+//         onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1))}
+//         className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-xl flex items-center justify-center transition-all duration-200"
+//         title="Zoom In"
+//       >
+//         <span className="text-lg">+</span>
+//       </button>
+//       <button
+//         onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.3))}
+//         className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-xl flex items-center justify-center transition-all duration-200"
+//         title="Zoom Out"
+//       >
+//         <span className="text-lg">-</span>
+//       </button>
+//       <button
+//         onClick={() => setZoomLevel(1)}
+//         className="w-10 h-10 bg-gray-500 hover:bg-gray-600 text-white rounded-xl flex items-center justify-center transition-all duration-200 text-xs"
+//         title="Reset Zoom"
+//       >
+//         100%
+//       </button>
+//       <div className="text-xs text-center text-gray-600 pt-2 border-t border-gray-200">
+//         {Math.round(zoomLevel * 100)}%
+//       </div>
+//     </div>
+//   );
+
+//   if (loading) return <Loader />;
+
+//   if (error) {
+//     return (
+//       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 flex items-center justify-center">
+//         <Navbar />
+//         <div className="text-center">
+//           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-rose-100">
+//             <div className="text-6xl mb-4">😞</div>
+//             <h2 className="text-2xl font-bold text-gray-800 mb-4">Connection Error</h2>
+//             <p className="text-gray-600 mb-6">{error}</p>
+//             <button
+//               onClick={fetchPeople}
+//               className="bg-rose-500 hover:bg-rose-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+//             >
+//               Try Again
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 overflow-hidden">
+//       <DownloadModal
+//         isOpen={showDownloadModal}
+//         onClose={() => setShowDownloadModal(false)}
+//         onDownload={handleDownload}
+//         downloading={downloading}
+//         groomCount={groomSide.length}
+//         brideCount={brideSide.length}
+//         totalCount={people.length}
+//       />
+
+//       <Navbar />
+
+//       <div className="h-screen flex flex-col pt-16">
+//         <TreeHeader
+//           totalCount={people.length}
+//           groomCount={groomSide.length}
+//           brideCount={brideSide.length}
+//           onDownloadClick={() => setShowDownloadModal(true)}
+//         />
+
+//         {/* Main Tree Container with Zoom */}
+//         <div 
+//           ref={treeContainerRef}
+//           className="flex-1 overflow-hidden relative"
+//         >
+//           {/* Zoomable Content */}
+//           <div 
+//             ref={familyTreeRef}
+//             className="flex h-full w-full origin-top-left transition-transform duration-300 ease-in-out"
+//             style={{ 
+//               transform: `scale(${zoomLevel})`,
+//               transformOrigin: 'top left'
+//             }}
+//           >
+//             <SidePanel
+//               ref={groomSideRef}
+//               side="groom"
+//               title="Groom's Family Tree"
+//               icon="👦"
+//               count={groomSide.length}
+//               gradientFrom="blue"
+//               gradientTo="cyan"
+//               borderColor="blue"
+//             >
+//               {groomSide.length === 0 ? (
+//                 <EmptyState 
+//                   icon="👨‍👦" 
+//                   message="Waiting for groom's family members..." 
+//                   color="blue" 
+//                 />
+//               ) : (
+//                 <TreeLayout
+//                   people={groomSide}
+//                   side="groom"
+//                   onDelete={handleDelete}
+//                   BACKEND_URL={BACKEND_URL}
+//                 />
+//               )}
+//             </SidePanel>
+
+//             <SidePanel
+//               ref={brideSideRef}
+//               side="bride"
+//               title="Bride's Family Tree"
+//               icon="👰"
+//               count={brideSide.length}
+//               gradientFrom="pink"
+//               gradientTo="rose"
+//               borderColor="pink"
+//             >
+//               {brideSide.length === 0 ? (
+//                 <EmptyState 
+//                   icon="👩‍👧" 
+//                   message="Waiting for bride's family members..." 
+//                   color="pink" 
+//                 />
+//               ) : (
+//                 <TreeLayout
+//                   people={brideSide}
+//                   side="bride"
+//                   onDelete={handleDelete}
+//                   BACKEND_URL={BACKEND_URL}
+//                 />
+//               )}
+//             </SidePanel>
+//           </div>
+
+//           {/* Zoom Controls */}
+//           <ZoomControls />
+//         </div>
+//       </div>
+
+//       {/* QR Code */}
+//       <div className="fixed bottom-6 right-6 z-50 cursor-pointer animate-bounce-slow">
+//         <Link to="/scan">
+//           <div className="group relative">
+//             <div className="absolute -inset-1 bg-gradient-to-r from-rose-400 to-amber-400 rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+//             <div className="relative p-4 bg-white border-2 border-rose-200 rounded-3xl shadow-2xl group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
+//               <QRCode
+//                 value={SCAN_URL}
+//                 size={110}
+//                 level="H"
+//                 includeMargin
+//                 fgColor="#be185d"
+//                 bgColor="transparent"
+//               />
+//               <p className="text-xs text-center text-gray-600 mt-2 font-medium">
+//                 Scan to Join 💝
+//               </p>
+//             </div>
+//           </div>
+//         </Link>
+//       </div>
+
+//       {/* Add CSS for no-scroll and zoom */}
+//       <style jsx>{`
+//         body {
+//           overflow: hidden;
+//         }
+        
+//         @keyframes fade-in {
+//           from { opacity: 0; }
+//           to { opacity: 1; }
+//         }
+        
+//         @keyframes bounce-slow {
+//           0%, 100% { transform: translateY(0); }
+//           50% { transform: translateY(-10px); }
+//         }
+        
+//         @keyframes modal-enter {
+//           0% { 
+//             transform: scale(0.8) translateY(-20px); 
+//             opacity: 0; 
+//           }
+//           100% { 
+//             transform: scale(1) translateY(0); 
+//             opacity: 1; 
+//           }
+//         }
+        
+//         .animate-fade-in {
+//           animation: fade-in 1s ease-out;
+//         }
+        
+//         .animate-bounce-slow {
+//           animation: bounce-slow 3s infinite;
+//         }
+        
+//         .animate-modal-enter {
+//           animation: modal-enter 0.3s ease-out;
+//         }
+//       `}</style>
+//     </div>
+//   );
+// }
