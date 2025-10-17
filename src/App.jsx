@@ -12,6 +12,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/scan" element={<ScanForm />} />
+
       <Route path="/tree" element={<TreeView />} />
     </Routes>
     

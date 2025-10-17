@@ -1,14 +1,20 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
   "routes": [
     {
-      "src": "/scan",
-      "dest": "/index.html",
-      "methods": ["GET"]
-    },
-    {
-      "src": "/tree", 
-      "dest": "/index.html",
-      "methods": ["GET"]
+      "src": "/assets/(.*)",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "src": "/(.*)",

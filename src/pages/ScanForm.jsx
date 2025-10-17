@@ -164,8 +164,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import pay from "../../assets/payment10.jpg"; // GPay QR code image
+import { BACKEND_URL } from "../config/env";
 
-const BACKEND_URL = "https://wftbackend.onrender.com";
+// const BACKEND_URL = "https://wftbackend.onrender.com";
 
 export default function ScanForm() {
   const [name, setName] = useState("");
@@ -332,8 +333,8 @@ export default function ScanForm() {
         </form>
       )}
 
-     {/* ================== PAYMENT SECTION ================== */}
-      {/* {formSubmitted && (
+      {/* ================== PAYMENT SECTION ================== */}
+      {formSubmitted && (
         <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-sm text-center border border-rose-100">
           <h1 className="text-2xl font-semibold mb-4 text-gray-800">
             🎉 Member Added Successfully!
@@ -341,10 +342,10 @@ export default function ScanForm() {
           <p className="text-gray-600 mb-6">
             Thank you for joining the family tree. If you'd like, you can
             support the creator below 💙
-          </p> */}
+          </p>
 
           {/* QR */}
-          {/* <img
+          <img
             src={pay}
             alt="Pay via Google Pay"
             className="w-56 h-56 mx-auto rounded-xl shadow-md cursor-pointer transition hover:scale-105"
@@ -353,10 +354,10 @@ export default function ScanForm() {
 
           <p className="mt-3 text-gray-600 text-sm">
             Scan or tap the QR to pay securely using UPI
-          </p> */}
+          </p>
 
           {/* Pay Button */}
-          {/* <button
+          <button
             onClick={handlePayClick}
             className="mt-5 bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg hover:bg-blue-700 transition"
           >
@@ -370,7 +371,7 @@ export default function ScanForm() {
             ⬅️ Add Another Member
           </button>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
