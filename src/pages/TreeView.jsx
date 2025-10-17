@@ -697,7 +697,7 @@ import SidePanel from "../components/SidePanel";
 import TreeLayout from "../components/TreeLayout";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
-import QRCode from "qrcode.react";
+import QRCodeCanvas  from "qrcode.react";
 import { Link } from "react-router-dom";
 
 const SCAN_URL = (import.meta.env.VITE_APP_URL || "http://localhost:5173") + "/scan";
@@ -862,7 +862,7 @@ export default function TreeView() {
           <div className="group relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-rose-400 to-amber-400 rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
             <div className="relative p-4 bg-white border-2 border-rose-200 rounded-3xl shadow-2xl group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
-              <QRCode
+              <QRCodeCanvas 
                 value={SCAN_URL}
                 size={110}
                 level="H"
