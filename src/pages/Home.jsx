@@ -2,12 +2,19 @@ import React from "react";
 import { Link } from "react-router-dom";
 import QRCode from "qrcode.react";
 import DownloadPDFButton from "../components/DownloadPDFButton";
+import { SCAN_URL } from "../config/env";
 
 // Dynamic scan URL from environment variables or fallback to localhost
-const SCAN_URL =
-  (import.meta.env.VITE_APP_URL || "http://localhost:5173") + "/scan";
+// const SCAN_URL =
+//   (import.meta.env.VITE_APP_URL || "http://localhost:5173") + "/scan";
+
+
 
 const Home = () => {
+  // Add this inside the component, before return
+console.log("QR Code URL:", SCAN_URL);
+console.log("Frontend URL:", FRONTEND_URL);
+
   return (
     <div>
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-amber-50 to-rose-50 py-8 px-4 sm:px-6 lg:px-8">
