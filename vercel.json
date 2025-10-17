@@ -1,0 +1,18 @@
+{
+  "routes": [
+    {
+      "src": "/scan",
+      "dest": "/index.html",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/tree", 
+      "dest": "/index.html",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

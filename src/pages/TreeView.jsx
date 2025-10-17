@@ -330,7 +330,7 @@ export default function TreeView() {
 
   if (error) {
 
-    
+   
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 flex items-center justify-center">
