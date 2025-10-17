@@ -1,22 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Added Router
 import Home from './pages/Home';
 import ScanForm from './pages/ScanForm';
 import TreeView from './pages/TreeView';
-// import Navbar from './components/Navbar'; 
+import Navbar from './components/Navbar'; 
 
 const App = () => {
   return (
-    <Router>
+    <Router> 
       <div>
-        {/* <Navbar/> */}
+        <Navbar/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/scan" element={<ScanForm />} />
           <Route path="/tree" element={<TreeView />} />
         </Routes>
       </div>
-    </Router>
+    </Router> 
   );
 };
 
