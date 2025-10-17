@@ -700,7 +700,7 @@ import Navbar from "../components/Navbar";
 import QRCodeCanvas  from "qrcode.react";
 import { Link } from "react-router-dom";
 
-const SCAN_URL = (import.meta.env.VITE_APP_URL || "http://localhost:5173") + "/scan";
+const SCAN_URL = ("https://weeding-family-tree.vercel.app" || "http://localhost:5173") + "/scan";
 const BACKEND_URL = "https://wftbackend.onrender.com";
 
 export default function TreeView() {

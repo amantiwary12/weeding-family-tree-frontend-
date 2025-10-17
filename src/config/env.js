@@ -5,8 +5,8 @@ export const config = {
     backendUrl: "http://localhost:8000",
   },
   production: {
-    frontendUrl: "https://your-wedding-site.com",
-    backendUrl: "https://your-backend-api.com",
+    frontendUrl: "https://weeding-family-tree.vercel.app",
+    backendUrl: "https://wftbackend.onrender.com",
   }
 };
 
