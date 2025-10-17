@@ -11,10 +11,7 @@ import { SCAN_URL } from "../config/env";
 
 
 const Home = () => {
-  // Add this inside the component, before return
-console.log("QR Code URL:", SCAN_URL);
-console.log("Frontend URL:", FRONTEND_URL);
-
+  
   return (
     <div>
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-amber-50 to-rose-50 py-8 px-4 sm:px-6 lg:px-8">
