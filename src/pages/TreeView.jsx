@@ -701,7 +701,7 @@ import QRCode from "qrcode.react";
 import { Link } from "react-router-dom";
 
 const SCAN_URL = (import.meta.env.VITE_APP_URL || "http://localhost:5173") + "/scan";
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = "https://wftbackend.onrender.com";
 
 export default function TreeView() {
   const { people, loading, error, fetchPeople, handleDelete, groomSide, brideSide } = useFamilyTree();
