@@ -330,9 +330,7 @@ export default function TreeView() {
 
   if (error) {
 
-    // Add this inside the component, before return
-console.log("QR Code URL:", SCAN_URL);
-console.log("Frontend URL:", FRONTEND_URL);
+    
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 flex items-center justify-center">
