@@ -2,12 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 
-import DownloadPDFButton from "../components/DownloadPDFButton";
+// import DownloadPDFButton from "../components/DownloadPDFButton";
 import { SCAN_URL } from "../config/env";
 
-// Dynamic scan URL from environment variables or fallback to localhost
-// const SCAN_URL =
-//   (import.meta.env.VITE_APP_URL || "http://localhost:5173") + "/scan";
 
 
 
