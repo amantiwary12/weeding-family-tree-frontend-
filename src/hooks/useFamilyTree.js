@@ -74,11 +74,13 @@
 
 
 
-
 // 📄 src/hooks/useFamilyTree.js
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config/env";
+
+// ✅ Add this line:
+axios.defaults.withCredentials = true;
 
 export const useFamilyTree = () => {
   const [people, setPeople] = useState([]);
@@ -111,14 +113,18 @@ export const useFamilyTree = () => {
       setPreviousLength(res.data.length);
     } catch (err) {
       console.error("Failed to fetch people", err);
-      setError("Failed to load family tree data. Please check if the server is running.");
+      setError(
+        "Failed to load family tree data. Please check if the server is running."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this person?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this person?"
+    );
     if (!confirmDelete) return;
 
     try {

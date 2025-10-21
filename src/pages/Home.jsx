@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import QRCode from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
+
 import DownloadPDFButton from "../components/DownloadPDFButton";
 import { SCAN_URL } from "../config/env";
 
@@ -67,7 +68,7 @@ const Home = () => {
                 <div className="flex-shrink-0">
                   <div className="relative">
                     <div className="p-8 bg-gradient-to-br from-rose-50 to-amber-50 rounded-3xl shadow-lg border border-rose-200 transform hover:scale-105 transition-transform duration-300">
-                      <QRCode
+                      <QRCodeCanvas
                         value={SCAN_URL}
                         size={220}
                         level="H"

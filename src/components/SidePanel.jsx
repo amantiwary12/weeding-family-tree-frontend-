@@ -102,6 +102,8 @@ const SidePanel = forwardRef(({
   );
 });
 
+SidePanel.displayName = 'SidePanel'; // Add this for better dev tools
+
 export default SidePanel;
 
 
