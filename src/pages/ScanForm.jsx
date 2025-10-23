@@ -5,7 +5,6 @@ import axios from "axios";
 import pay from "../../assets/payment10.jpg"; // GPay QR code image
 import { BACKEND_URL } from "../config/env";
 
-// const BACKEND_URL = "https://wftbackend.onrender.com";
 
 export default function ScanForm() {
   const [name, setName] = useState("");
