@@ -1,18 +1,27 @@
+//hooks/usewebsocket.js
 import { useEffect, useRef } from 'react';
 import { BACKEND_URL } from '../config/env';
 
-export const useWebSocket = (onNewMember, onMemberDeleted) => {
+export const useWebSocket = (onNewMember, onMemberDeleted, weddingCode) => {
   const ws = useRef(null);
   const reconnectTimeout = useRef(null);
 
   const connect = () => {
     try {
-      // Convert http:// to ws:// or https:// to wss://
-      const wsUrl = BACKEND_URL.replace(/^http/, 'ws') + '/ws';
+      // ✅ CHECK IF WEDDING CODE EXISTS
+      if (!weddingCode) {
+        console.log('⏸️ No wedding code provided, skipping WebSocket connection');
+        return;
+      }
+
+      // ✅ INCLUDE WEDDING CODE IN WEBSOCKET URL
+      const wsUrl = `${BACKEND_URL.replace(/^http/, 'ws')}/ws?weddingCode=${weddingCode}`;
+      console.log(`🔗 Connecting WebSocket for wedding: ${weddingCode}`);
+      
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
-        console.log('✅ WebSocket connected');
+        console.log(`✅ WebSocket connected for wedding: ${weddingCode}`);
         clearTimeout(reconnectTimeout.current);
       };
 
@@ -20,33 +29,43 @@ export const useWebSocket = (onNewMember, onMemberDeleted) => {
         try {
           const message = JSON.parse(event.data);
           
+          // ✅ VERIFY THE MESSAGE IS FOR OUR WEDDING
+          if (message.weddingCode && message.weddingCode !== weddingCode) {
+            console.log(`🔒 Received message for different wedding (${message.weddingCode}), ignoring for our wedding (${weddingCode})`);
+            return;
+          }
+          
           switch (message.type) {
             case 'NEW_MEMBER':
-              console.log('📨 Received new member:', message.data);
+              console.log(`📨 Received new member for wedding ${weddingCode}:`, message.data);
               onNewMember(message.data);
               break;
               
             case 'MEMBER_DELETED':
-              console.log('📨 Received deleted member:', message.data);
+              console.log(`📨 Received deleted member for wedding ${weddingCode}:`, message.data);
               onMemberDeleted(message.data.id);
               break;
               
             default:
-              console.log('Unknown message type:', message.type);
+              console.log('Unknown WebSocket message type:', message.type);
           }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }
       };
 
-      ws.current.onclose = () => {
-        console.log('❌ WebSocket disconnected, attempting reconnect...');
-        // Attempt reconnect after 3 seconds
-        reconnectTimeout.current = setTimeout(connect, 3000);
+      ws.current.onclose = (event) => {
+        console.log(`❌ WebSocket disconnected for wedding ${weddingCode}, code: ${event.code}, reason: ${event.reason}`);
+        
+        // ✅ ONLY RECONNECT IF WE STILL HAVE A WEDDING CODE
+        if (weddingCode) {
+          console.log(`🔄 Attempting reconnect for wedding ${weddingCode} in 3 seconds...`);
+          reconnectTimeout.current = setTimeout(connect, 3000);
+        }
       };
 
       ws.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        console.error(`❌ WebSocket error for wedding ${weddingCode}:`, error);
       };
 
     } catch (error) {
@@ -54,16 +73,32 @@ export const useWebSocket = (onNewMember, onMemberDeleted) => {
     }
   };
 
+  const disconnect = () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.close(1000, 'Component unmounting');
+    }
+    clearTimeout(reconnectTimeout.current);
+  };
+
   useEffect(() => {
-    connect();
+    // ✅ CONNECT ONLY IF WE HAVE A WEDDING CODE
+    if (weddingCode) {
+      connect();
+    } else {
+      console.log('⏸️ No wedding code, WebSocket not connected');
+    }
 
     return () => {
-      clearTimeout(reconnectTimeout.current);
-      if (ws.current) {
-        ws.current.close();
-      }
+      disconnect();
     };
-  }, []);
+  }, [weddingCode]); // ✅ RECONNECT WHEN WEDDING CODE CHANGES
 
-  return ws;
+  // ✅ RETURN CONNECTION STATUS
+  const isConnected = ws.current?.readyState === WebSocket.OPEN;
+  
+  return {
+    ws,
+    isConnected,
+    weddingCode
+  };
 };

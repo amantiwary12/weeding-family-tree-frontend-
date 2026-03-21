@@ -3,12 +3,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config/env";
 
+axios.defaults.withCredentials = true;
 
-
-// ✅ Add this line:
-axios.defaults.withCredentials = true;    
-
-export const useFamilyTree = () => {
+export const useFamilyTree = (weddingCode) => {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +15,29 @@ export const useFamilyTree = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get(`${BACKEND_URL}/api/people`);
+
+      console.log("🔄 Fetching people for wedding code:", weddingCode);
+
+      // ✅ IMPROVED WEDDING CODE VALIDATION
+      if (
+        !weddingCode ||
+        weddingCode === "undefined" ||
+        weddingCode === "null"
+      ) {
+        console.log("❌ Invalid wedding code provided:", weddingCode);
+        setError("Valid wedding code is required");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ ADDED ERROR HANDLING FOR API CALL
+      const url = `${BACKEND_URL}/api/people?weddingCode=${encodeURIComponent(
+        weddingCode
+      )}`;
+      console.log("📡 Making API call to:", url);
+
+      const res = await axios.get(url);
+      console.log("✅ API response received, people count:", res.data.length);
 
       if (res.data.length > previousLength) {
         setTimeout(() => {
@@ -35,13 +54,32 @@ export const useFamilyTree = () => {
         }, 100);
       }
 
-      setPeople(res.data);
-      setPreviousLength(res.data.length);
+      const uniquePeople = [];
+      const seen = new Set();
+
+      res.data.forEach((p) => {
+        if (p?._id && !seen.has(p._id)) {
+          seen.add(p._id);
+          uniquePeople.push(p);
+        }
+      });
+
+      setPeople(uniquePeople);
+      setPreviousLength(uniquePeople.length);
     } catch (err) {
-      console.error("Failed to fetch people", err);
-      setError(
-        "Failed to load family tree data. Please check if the server is running."
-      );
+      console.error("❌ Failed to fetch people:", err);
+      console.error("❌ Error response:", err.response?.data);
+      console.error("❌ Error status:", err.response?.status);
+
+      if (err.response?.status === 404) {
+        setError("Wedding not found. Please check your wedding code.");
+      } else if (err.response?.status === 400) {
+        setError("Invalid wedding code format.");
+      } else {
+        setError(
+          "Failed to load family tree data. Please check if the server is running."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -63,21 +101,33 @@ export const useFamilyTree = () => {
     }
   };
 
+  // ✅ IMPROVED USE EFFECT WITH LOADING STATE
   useEffect(() => {
-    fetchPeople();
-  }, []);
+    console.log(
+      "🎯 useFamilyTree useEffect triggered with weddingCode:",
+      weddingCode
+    );
 
-  return {
+    if (weddingCode && weddingCode !== "undefined" && weddingCode !== "null") {
+      fetchPeople();
+    } else {
+      setLoading(false);
+      setError("No wedding code provided");
+    }
+  }, [weddingCode]);
+
+    return {
     people,
     loading,
     error,
     fetchPeople,
     handleDelete,
-    groomSide: people.filter((p) => p.side?.toLowerCase() === "groom"),
-    brideSide: people.filter((p) => p.side?.toLowerCase() === "bride"),
+
+    groomSide: people.filter(p => p.side === "groom"),
+    brideSide: people.filter(p => p.side === "bride"),
+
+    peopleById: Object.fromEntries(
+      people.map(p => [p._id, p])
+    ),
   };
 };
-
-
-
-

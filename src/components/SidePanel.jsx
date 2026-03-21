@@ -1,6 +1,3 @@
-
-
-
 // 📄 src/components/SidePanel.jsx
 import React, { forwardRef } from 'react';
 
