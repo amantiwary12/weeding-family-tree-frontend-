@@ -8,7 +8,11 @@ export default function DownloadPDFButton({ targetId, fileName }) {
     const element = document.getElementById(targetId);
     if (!element) return alert("Tree not found");
 
-    const canvas = await html2canvas(element, { scale: 2 });
+    const canvas = await html2canvas(element, {
+  scale: 2,
+  useCORS: true,
+  scrollY: -window.scrollY,
+});
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF("p", "mm", "a4");
@@ -16,7 +20,7 @@ export default function DownloadPDFButton({ targetId, fileName }) {
     const imgProps = pdf.getImageProperties(imgData);
     const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
 
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
+   pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight, undefined, "FAST");
     pdf.save(fileName);
   };
 

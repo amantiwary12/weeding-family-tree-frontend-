@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config/env";
 
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = false;
 
 export const useFamilyTree = (weddingCode) => {
   const [people, setPeople] = useState([]);
@@ -76,9 +76,7 @@ export const useFamilyTree = (weddingCode) => {
       } else if (err.response?.status === 400) {
         setError("Invalid wedding code format.");
       } else {
-        setError(
-          "Failed to load family tree data. Please check if the server is running."
-        );
+       setError("Server is starting... please wait 10 seconds");
       }
     } finally {
       setLoading(false);

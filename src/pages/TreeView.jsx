@@ -73,9 +73,8 @@ export default function TreeView() {
 
       setWeddingInfoLoading(true);
       try {
-        const response = await fetch(
-          `${BACKEND_URL}/api/weddings/${weddingCode}`,
-        );
+        const response = await fetch(`${BACKEND_URL}/api/weddings/${weddingCode}`);
+        
         if (response.ok) {
           const data = await response.json();
           setWeddingInfo(data.wedding);

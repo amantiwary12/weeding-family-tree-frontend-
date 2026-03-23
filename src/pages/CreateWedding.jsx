@@ -18,20 +18,20 @@ export default function CreateWedding() {
   const navigate = useNavigate();
 
   // ADD THIS USEFFECT TO TEST CONNECTION
-  useEffect(() => {
-    const testConnection = async () => {
-      try {
-        // console.log("🔗 Testing connection to:", BACKEND_URL);
-        // const response = await axios.get(`${BACKEND_URL}/api/health`);
-        // setConnectionStatus(`✅ Connected to backend`);
-        // console.log("✅ Backend connection successful:", response.data);
-      } catch (error) {
-        console.log(error.message)
-      }
-    };
+ useEffect(() => {
+  const testConnection = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/api/health`);
+      setConnectionStatus("✅ Connected to backend");
+      console.log(res.data);
+    } catch (error) {
+      setConnectionStatus("❌ Cannot connect to backend");
+      console.log(error.message);
+    }
+  };
 
-    testConnection();
-  }, []);
+  testConnection();
+}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,11 +42,11 @@ export default function CreateWedding() {
       console.log("📨 Sending wedding creation request...");
 
       const res = await axios.post(`${BACKEND_URL}/api/weddings`, formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 15000,
-      });
+  headers: {
+    "Content-Type": "application/json",
+  },
+  timeout: 60000,
+});
 
       console.log("✅ Wedding created successfully:", res.data);
 

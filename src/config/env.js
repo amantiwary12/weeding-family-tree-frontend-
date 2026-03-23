@@ -34,11 +34,11 @@ export const config = {
 };
 
 const environment = import.meta.env.PROD ? "production" : "development";
-// In your env.js, make sure WebSocket URLs work for both HTTP and HTTPS
-// const wsUrl = BACKEND_URL.replace(/^http/, 'ws'); 
+
 
 export const FRONTEND_URL = 
   import.meta.env.VITE_APP_URL || config[environment].frontendUrl;
-export const BACKEND_URL = 
-  import.meta.env.VITE_BACKEND_URL || config[environment].backendUrl;
+
+export const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 export const SCAN_URL = `${FRONTEND_URL}/scan`;
