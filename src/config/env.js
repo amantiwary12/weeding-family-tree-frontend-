@@ -40,5 +40,5 @@ export const FRONTEND_URL =
   import.meta.env.VITE_APP_URL || config[environment].frontendUrl;
 
 export const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+ import.meta.env.VITE_BACKEND_URL;
 export const SCAN_URL = `${FRONTEND_URL}/scan`;

@@ -1,4 +1,4 @@
-//createwedding.jsx
+//src/pages/createwedding.jsx
 import React, { useState, useEffect } from "react"; // Add useEffect
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
