@@ -683,9 +683,9 @@ useEffect(() => {
 }, [initialNodes, initialEdges]);
 
 
-
-  return (
-    <div style={{ width: "100%", height: "90vh" }}>
+return (
+  <div style={{ width: "100%", height: "90vh" }}>
+    <ReactFlowProvider>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -701,6 +701,7 @@ useEffect(() => {
         <Controls />
         <Background />
       </ReactFlow>
-    </div>
-  );
+    </ReactFlowProvider>
+  </div>
+);
 }
