@@ -570,7 +570,6 @@
 
 
 
-
 // src/components/FamilyGraph.jsx
 import React, { useMemo, useEffect } from "react";
 import ReactFlow, {
@@ -591,14 +590,15 @@ const nodeTypes = {
   person: PersonNode,
 };
 
-const getLayoutedElements = (nodes, edges) => {
+// ✅ FIXED: layout function
+const getLayoutedElements = (nodes, edges, peopleLength) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   dagreGraph.setGraph({
     rankdir: "TB",
-    nodesep: 80,
-    ranksep: 120,
+    nodesep: peopleLength > 10 ? 50 : 80,
+    ranksep: peopleLength > 10 ? 80 : 120,
   });
 
   nodes.forEach((node) => {
@@ -626,6 +626,13 @@ const getLayoutedElements = (nodes, edges) => {
 };
 
 export default function FamilyGraph({ people, onDelete }) {
+  // ✅ FIXED: zoom inside component
+  const zoomLevel =
+    people.length > 15 ? 0.6 :
+    people.length > 10 ? 0.7 :
+    people.length > 6 ? 0.8 :
+    1;
+
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     if (!people) return { nodes: [], edges: [] };
 
@@ -639,7 +646,7 @@ export default function FamilyGraph({ people, onDelete }) {
         data: {
           label: `${person.name} (${person.relation})`,
           photo: person.photo,
-          onDelete: onDelete, // ✅ use parent delete
+          onDelete: onDelete,
         },
         position: { x: 0, y: 0 },
       });
@@ -655,17 +662,24 @@ export default function FamilyGraph({ people, onDelete }) {
       }
     });
 
-    return getLayoutedElements(nodes, edges);
+    return getLayoutedElements(nodes, edges, people.length);
   }, [people, onDelete]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // ✅ IMPORTANT: update when people changes
+  // ✅ FIXED: no full reset → prevents blinking
   useEffect(() => {
-    setNodes(initialNodes);
+    setNodes((prev) => {
+      const prevIds = new Set(prev.map((n) => n.id));
+
+      const newNodes = initialNodes.filter((n) => !prevIds.has(n.id));
+
+      return [...prev, ...newNodes];
+    });
+
     setEdges(initialEdges);
-  }, [initialNodes, initialEdges, setNodes, setEdges]);
+  }, [initialNodes, initialEdges]);
 
   return (
     <div style={{ width: "100%", height: "90vh" }}>
@@ -676,6 +690,9 @@ export default function FamilyGraph({ people, onDelete }) {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
+        minZoom={0.4}
+        maxZoom={1.5}
+        defaultZoom={zoomLevel}
       >
         <MiniMap />
         <Controls />

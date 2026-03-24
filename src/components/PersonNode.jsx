@@ -12,6 +12,7 @@ export default function PersonNode({ id, data }) {
 
   return (
     <div
+    className="node-animate"
       style={{
         width: 150,
         background: "#fff",

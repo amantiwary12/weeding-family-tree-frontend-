@@ -99,6 +99,17 @@ export const useFamilyTree = (weddingCode) => {
     }
   };
 
+
+  const addPersonRealtime = (newPerson) => {
+  setPeople((prev) => {
+    // prevent duplicates
+    if (prev.find(p => p._id === newPerson._id)) return prev;
+    return [...prev, newPerson];
+  });
+};
+
+
+
   // ✅ IMPROVED USE EFFECT WITH LOADING STATE
   useEffect(() => {
     console.log(
@@ -120,6 +131,8 @@ export const useFamilyTree = (weddingCode) => {
     error,
     fetchPeople,
     handleDelete,
+
+      addPersonRealtime, 
 
     groomSide: people.filter(p => p.side === "groom"),
     brideSide: people.filter(p => p.side === "bride"),

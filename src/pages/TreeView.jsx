@@ -46,7 +46,7 @@ export default function TreeView() {
   // ✅ WEB SOCKET HANDLERS
   const handleNewMember = (newMember) => {
     console.log("🆕 New member added via WebSocket:", newMember);
-    fetchPeople();
+    addPersonRealtime(newMember);
 
     const event = new CustomEvent("newMemberAdded", {
       detail: { name: newMember.name, relation: newMember.relation },
