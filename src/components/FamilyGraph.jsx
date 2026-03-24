@@ -582,6 +582,7 @@ import ReactFlow, {
 import PersonNode from "./PersonNode";
 import dagre from "dagre";
 import "reactflow/dist/style.css";
+import { useReactFlow } from "reactflow";
 
 const nodeWidth = 170;
 const nodeHeight = 170;
@@ -668,18 +669,20 @@ export default function FamilyGraph({ people, onDelete }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+  const { fitView } = useReactFlow();
+
   // ✅ FIXED: no full reset → prevents blinking
-  useEffect(() => {
-    setNodes((prev) => {
-      const prevIds = new Set(prev.map((n) => n.id));
+useEffect(() => {
+  setNodes(initialNodes);
+  setEdges(initialEdges);
 
-      const newNodes = initialNodes.filter((n) => !prevIds.has(n.id));
+  setTimeout(() => {
+    fitView({ duration: 400 });
+  }, 50);
 
-      return [...prev, ...newNodes];
-    });
+}, [initialNodes, initialEdges]);
 
-    setEdges(initialEdges);
-  }, [initialNodes, initialEdges]);
+
 
   return (
     <div style={{ width: "100%", height: "90vh" }}>

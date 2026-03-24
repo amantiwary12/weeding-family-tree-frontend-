@@ -94,7 +94,7 @@ export const useWebSocket = (onNewMember, onMemberDeleted, weddingCode) => {
   }, [weddingCode]); // ✅ RECONNECT WHEN WEDDING CODE CHANGES
 
   // ✅ RETURN CONNECTION STATUS
-  const isConnected = ws.current?.readyState === WebSocket.OPEN;
+ const isConnected = ws.current && ws.current.readyState === 1;
   
   return {
     ws,

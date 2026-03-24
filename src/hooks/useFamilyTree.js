@@ -39,20 +39,20 @@ export const useFamilyTree = (weddingCode) => {
       const res = await axios.get(url);
       console.log("✅ API response received, people count:", res.data.length);
 
-      if (res.data.length > previousLength) {
-        setTimeout(() => {
-          const newMembers = res.data.slice(previousLength);
-          newMembers.forEach((member) => {
-            const element = document.getElementById(`member-${member._id}`);
-            if (element) {
-              element.classList.add("animate-zoom-pop");
-              setTimeout(() => {
-                element.classList.remove("animate-zoom-pop");
-              }, 1000);
-            }
-          });
-        }, 100);
-      }
+      // if (res.data.length > previousLength) {
+      //   setTimeout(() => {
+      //     const newMembers = res.data.slice(previousLength);
+      //     newMembers.forEach((member) => {
+      //       const element = document.getElementById(`member-${member._id}`);
+      //       if (element) {
+      //         element.classList.add("animate-zoom-pop");
+      //         setTimeout(() => {
+      //           element.classList.remove("animate-zoom-pop");
+      //         }, 1000);
+      //       }
+      //     });
+      //   }, 100);
+      // }
 
       const uniquePeople = [];
       const seen = new Set();

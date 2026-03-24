@@ -26,6 +26,7 @@ export default function TreeView() {
     handleDelete,
     groomSide = [],
     brideSide = [],
+     addPersonRealtime,
   } = useFamilyTree(weddingCode);
 
   const [showDownloadModal, setShowDownloadModal] = useState(false);
